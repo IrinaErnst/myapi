@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'sinatra'
 require 'json'
  
@@ -25,5 +26,6 @@ class API < Sinatra::Base
      :maj_val => params[:maj_val].to_i,
      :min_val => params[:min_val].to_i}.to_json
   end
- 
+
+
 end
