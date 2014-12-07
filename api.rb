@@ -15,12 +15,14 @@ class API < Sinatra::Base
   get '/beacons.json' do
     content_type :json
  
-    if params[:beacon_id] == beacon_id && params[:maj_val].to_i == 1 && params[:min_val].to_i == 1
+    if params[:beacon_id] == beacon_id && params[:maj_val].to_i == 43875 && params[:min_val].to_i == 58414
       beacon_name = "Green"
-    elsif params[:beacon_id] == beacon_id && params[:maj_val].to_i == 1 && params[:min_val].to_i == 2
+    elsif params[:beacon_id] == beacon_id && params[:maj_val].to_i == 61334 && params[:min_val].to_i == 32857
       beacon_name = "Purple"
-    else
+    elsif params[:beacon_id] == beacon_id && params[:maj_val].to_i == 21137 && params[:min_val].to_i == 30314
       beacon_name = "Blue"
+    else
+      beacon_name = "Unknown"
     end
  
     {:name => beacon_name,
