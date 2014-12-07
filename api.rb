@@ -3,7 +3,9 @@ require 'sinatra'
 require 'json'
  
 class API < Sinatra::Base
- 
+
+  beacon_id = "B9407F30-F5F8-466E-AFF9-25556B57FE6D" 
+
   get '/' do
     '<html><body><h1>Place-it!</h1></body></html>'
   end
@@ -13,9 +15,9 @@ class API < Sinatra::Base
   get '/beacons.json' do
     content_type :json
  
-    if params[:beacon_id] == 'abc' && params[:maj_val].to_i == 1 && params[:min_val].to_i == 1
+    if params[:beacon_id] == beacon_id && params[:maj_val].to_i == 1 && params[:min_val].to_i == 1
       beacon_name = "Green"
-    elsif params[:beacon_id] == 'abc' && params[:maj_val].to_i == 1 && params[:min_val].to_i == 2
+    elsif params[:beacon_id] == beacon_id && params[:maj_val].to_i == 1 && params[:min_val].to_i == 2
       beacon_name = "Purple"
     else
       beacon_name = "Blue"
