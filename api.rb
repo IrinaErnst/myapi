@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'json'
+require 'redis'
  
 class API < Sinatra::Base
 
@@ -13,7 +14,6 @@ class API < Sinatra::Base
 
   get '/' do
     '<html><body><h1>Place-it!</h1></body></html>'
-    File.read(File.join('views', 'index.html'))
   end
  
   # Test locally w/ 'curl -i http://localhost:5000/rooms.json'
