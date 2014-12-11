@@ -7,6 +7,15 @@ class API < Sinatra::Base
 
   beacon_id = "B9407F30-F5F8-466E-AFF9-25556B57FE6D" 
 
+  configure do
+    if ENV["REDISCLOUD_URL"] 
+      uri = URI.parse(ENV["REDISCLOUD_URL"])
+      $redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
+    else
+      $redis = Redis.new
+    end
+  end
+
   get '/' do
     '<html><body><h1>Place-it!</h1></body></html>'
   end
@@ -32,41 +41,32 @@ class API < Sinatra::Base
      :min_val => params[:min_val].to_i}.to_json
   end
 
-configure do
-  if ENV["REDISCLOUD_URL"] 
-    uri = URI.parse(ENV["REDISCLOUD_URL"])
-    $redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
-  else
-    $redis = Redis.new
-  end
-end
+  get '/command' do
+    @res= ''
 
-get '/command' do
-  @res= ''
-
-  begin
-    case params[:a]
-      when 'set'
-        @res = $redis.set('welcome_msg', 'Hello from Redis!')
-      when 'get'
-        @res = $redis.get('welcome_msg') || 'undefined'
-      when 'info'
-        $redis.info.each { |k, v| 
-          @res += "#{k}: #{v}<br />" 
-        }
-      when 'flush'
-        @res = $redis.flushall
+    begin
+      case params[:a]
+        when 'set'
+          @res = $redis.set('welcome_msg', 'Hello from Redis!')
+        when 'get'
+          @res = $redis.get('welcome_msg') || 'undefined'
+        when 'info'
+          $redis.info.each { |k, v| 
+            @res += "#{k}: #{v}<br />" 
+          }
+        when 'flush'
+          @res = $redis.flushall
+      end
+      
+    rescue Redis::BaseConnectionError => e
+      puts e.message
+      @res = nil
+    rescue SocketError => e
+      puts e.message
+      @res = nil
     end
-    
-  rescue Redis::BaseConnectionError => e
-    puts e.message
-    @res = nil
-  rescue SocketError => e
-    puts e.message
-    @res = nil
-  end
 
-  @res  
-end
+    @res  
+  end
 
 end
