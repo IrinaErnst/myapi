@@ -15,12 +15,16 @@ http://frozen-shelf-4349.herokuapp.com/.herokuapp.com, and uses Redis Cloud as a
 *****************************************************************************************
 
 Run the server: foreman start
+heroku login --tail
 
 *****************************************************************************************
                                     Redis Cloud
 *****************************************************************************************
 To access Redis Cloud Dashboard run:
 heroku addons:open rediscloud
+
+To manually enter to database:
+redis-cli 
 
 SET and GET a key, get your db INFO and FLUSH the db.
 

@@ -14,6 +14,9 @@ class API < Sinatra::Base
     else
       $redis = Redis.new
     end
+    $redis.set("B9407F30-F5F8-466E-AFF9-25556B57FE6D:43875:58414", "Green")
+    $redis.set("B9407F30-F5F8-466E-AFF9-25556B57FE6D:61334:32857", "Purple")
+    $redis.set("B9407F30-F5F8-466E-AFF9-25556B57FE6D:21137:30314", "Blue")
   end
 
   get '/' do
@@ -24,16 +27,23 @@ class API < Sinatra::Base
   #                 'curl -i http://localhost:5000/rooms.json\?beacon_id=abc\&maj_val\=1\&min_val\=1'
   get '/beacons.json' do
     content_type :json
- 
-    if params[:beacon_id] == beacon_id && params[:maj_val].to_i == 43875 && params[:min_val].to_i == 58414
-      beacon_name = "Green"
-    elsif params[:beacon_id] == beacon_id && params[:maj_val].to_i == 61334 && params[:min_val].to_i == 32857
-      beacon_name = "Purple"
-    elsif params[:beacon_id] == beacon_id && params[:maj_val].to_i == 21137 && params[:min_val].to_i == 30314
-      beacon_name = "Blue"
-    else
+
+    key = "#{params[:beacon_id]}:#{params[:maj_val]}:#{params[:min_val]}"
+    beacon_name = $redis.get(key)
+    if beacon_name.nil? 
       beacon_name = "Unknown"
     end
+
+ 
+    # if params[:beacon_id] == beacon_id && params[:maj_val].to_i == 43875 && params[:min_val].to_i == 58414
+    #   beacon_name = "Green"
+    # elsif params[:beacon_id] == beacon_id && params[:maj_val].to_i == 61334 && params[:min_val].to_i == 32857
+    #   beacon_name = "Purple"
+    # elsif params[:beacon_id] == beacon_id && params[:maj_val].to_i == 21137 && params[:min_val].to_i == 30314
+    #   beacon_name = "Blue"
+    # else
+    #   beacon_name = "Unknown"
+    # end
  
     {:name => beacon_name,
      :beacon_id => params[:beacon_id],
