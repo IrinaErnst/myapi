@@ -1,16 +1,10 @@
 require 'rubygems'
 require 'sinatra'
 require 'json'
-require 'redis'
  
 class API < Sinatra::Base
 
   beacon_id = "B9407F30-F5F8-466E-AFF9-25556B57FE6D" 
-
-  configure do
-  uri = URI.parse(ENV["http://frozen-shelf-4349.herokuapp.com/"])
-  $redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
-  end
 
   get '/' do
     '<html><body><h1>Place-it!</h1></body></html>'
