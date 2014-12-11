@@ -37,33 +37,4 @@ class API < Sinatra::Base
      :min_val => params[:min_val].to_i}.to_json
   end
 
-
-  get '/command' do
-    @res= ''
-
-    begin
-      case params[:a]
-        when 'set'
-          @res = $redis.set('welcome_msg', 'Hello from Redis!')
-        when 'get'
-          @res = $redis.get('welcome_msg') || 'undefined'
-        when 'info'
-          $redis.info.each { |k, v| 
-            @res += "#{k}: #{v}<br />" 
-          }
-        when 'flush'
-          @res = $redis.flushall
-      end
-    
-    rescue Redis::BaseConnectionError => e
-      puts e.message
-      @res = nil
-    rescue SocketError => e
-      puts e.message
-      @res = nil
-    end
-
-    @res  
-  end
-
 end
