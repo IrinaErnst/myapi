@@ -2,6 +2,7 @@ require 'rubygems'
 require 'sinatra'
 require 'json'
 require 'redis'
+require 'time'
  
 class API < Sinatra::Base
 
@@ -14,69 +15,53 @@ class API < Sinatra::Base
     else
       $redis = Redis.new
     end
-    $redis.set("B9407F30-F5F8-466E-AFF9-25556B57FE6D:43875:58414", "Green")
-    $redis.set("B9407F30-F5F8-466E-AFF9-25556B57FE6D:61334:32857", "Purple")
-    $redis.set("B9407F30-F5F8-466E-AFF9-25556B57FE6D:21137:30314", "Blue")
+
+    # Sample data
+    # $redis.flushall
+    # $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|21137|30314|14159874354|2014-12-18T18:06:39Z", {"sender"=>"14159874355","message"=>"Hello World Green 39!","created_at"=>"2014-12-18T18:06:39Z"})
+    # $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|21137|30314|14159874354|2014-12-18T18:06:40Z", {"sender"=>"14159874355","message"=>"Hello World Green 40!","created_at"=>"2014-12-18T18:06:40Z"})
+    # $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|21137|30314|14159874354|2014-12-18T18:06:41Z", {"sender"=>"14159874355","message"=>"Hello World Green 41!","created_at"=>"2014-12-18T18:06:41Z"})
+
+    # $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|61334|32857|14159874354|2014-12-18T18:06:39Z", {"sender"=>"14159874355","message"=>"Hello World Purple 39!","created_at"=>"2014-12-18T18:06:39Z"})
+    # $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|61334|32857|14159874354|2014-12-18T18:06:40Z", {"sender"=>"14159874355","message"=>"Hello World Purple 40!","created_at"=>"2014-12-18T18:06:40Z"})
+    # $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|61334|32857|14159874354|2014-12-18T18:06:41Z", {"sender"=>"14159874355","message"=>"Hello World Purple 41!","created_at"=>"2014-12-18T18:06:41Z"})
+
   end
 
   get '/' do
     '<html><body><h1>Place-it!</h1></body></html>'
   end
  
-  # Test locally w/ 'curl -i http://localhost:5000/rooms.json'
-  #                 'curl -i http://localhost:5000/rooms.json\?beacon_id=abc\&maj_val\=1\&min_val\=1'
+  #  curl -i 'http://localhost:5000/beacons.json?UUID=B9407F30-F5F8-466E-AFF9-25556B57FE6D&major=21137&minor=30314&receiver=14159874354'
+  #  curl -i 'http://localhost:5000/beacons.json?UUID=B9407F30-F5F8-466E-AFF9-25556B57FE6D&major=61334&minor=32857&receiver=14159874354'
+
   get '/beacons.json' do
     content_type :json
 
-    key = "#{params[:beacon_id]}:#{params[:maj_val]}:#{params[:min_val]}"
-    beacon_name = $redis.get(key)
-    if beacon_name.nil? 
-      beacon_name = "Unknown"
-    end
+    key = "m|#{params[:UUID]}|#{params[:major]}|#{params[:minor]}|#{params[:receiver]}|*"
 
- 
-    # if params[:beacon_id] == beacon_id && params[:maj_val].to_i == 43875 && params[:min_val].to_i == 58414
-    #   beacon_name = "Green"
-    # elsif params[:beacon_id] == beacon_id && params[:maj_val].to_i == 61334 && params[:min_val].to_i == 32857
-    #   beacon_name = "Purple"
-    # elsif params[:beacon_id] == beacon_id && params[:maj_val].to_i == 21137 && params[:min_val].to_i == 30314
-    #   beacon_name = "Blue"
-    # else
-    #   beacon_name = "Unknown"
-    # end
- 
-    {:name => beacon_name,
-     :beacon_id => params[:beacon_id],
-     :maj_val => params[:maj_val].to_i,
-     :min_val => params[:min_val].to_i}.to_json
+    returned_keys = $redis.keys(key)
+
+    key_values = []
+    returned_keys.each { |k|
+      key_values.push($redis.get(k))
+    }
+    
+   key_values.to_json
   end
 
-  get '/command' do
-    @res= ''
+  # curl --data "UUID=B9407F30-F5F8-466E-AFF9-25556B57FE6D&major=21137&minor=30314&receiver=14159874354&sender=14155551212&message=Wow, it worked" 'http://localhost:5000/beacons.json'
 
-    begin
-      case params[:a]
-        when 'set'
-          @res = $redis.set('welcome_msg', 'Hello from Redis!')
-        when 'get'
-          @res = $redis.get('welcome_msg') || 'undefined'
-        when 'info'
-          $redis.info.each { |k, v| 
-            @res += "#{k}: #{v}<br />" 
-          }
-        when 'flush'
-          @res = $redis.flushall
-      end
-      
-    rescue Redis::BaseConnectionError => e
-      puts e.message
-      @res = nil
-    rescue SocketError => e
-      puts e.message
-      @res = nil
-    end
+  post '/beacons.json' do
+    content_type :json
 
-    @res  
+    timestamp = Time.now.utc.iso8601
+    key = "m|#{params[:UUID]}|#{params[:major]}|#{params[:minor]}|#{params[:receiver]}|#{timestamp}"
+    value = {"sender"=>"#{params[:sender]}","message"=>"#{params[:message]}","created_at"=>"#{timestamp}"}
+
+    $redis.set(key, value)
+
+    {"status" => "OK", "key" => key, "value" => value}.to_json
   end
 
 end
