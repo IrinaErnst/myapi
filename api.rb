@@ -21,9 +21,6 @@ class API < Sinatra::Base
     '<html><body><h1>Place-it!</h1></body></html>'
   end
  
-  #  curl -i 'http://localhost:5000/beacons.json?UUID=B9407F30-F5F8-466E-AFF9-25556B57FE6D&major=21137&minor=30314&receiver=14159874354'
-  #  curl -i 'http://localhost:5000/beacons.json?UUID=B9407F30-F5F8-466E-AFF9-25556B57FE6D&major=61334&minor=32857&receiver=14159874354'
-
   get '/flushall' do
     $redis.flushall
   end 
@@ -37,6 +34,10 @@ class API < Sinatra::Base
     $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|61334|32857|14159874354|2014-12-18T18:06:40Z", {"sender"=>"14159874355","message"=>"Hello World Purple 40!","created_at"=>"2014-12-18T18:06:40Z"})
     $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|61334|32857|14159874354|2014-12-18T18:06:41Z", {"sender"=>"14159874355","message"=>"Hello World Purple 41!","created_at"=>"2014-12-18T18:06:41Z"})
   end 
+
+  #  curl -i 'http://localhost:5000/beacons.json?UUID=B9407F30-F5F8-466E-AFF9-25556B57FE6D&major=21137&minor=30314&receiver=14159874354'
+  #  curl -i 'http://localhost:5000/beacons.json?UUID=B9407F30-F5F8-466E-AFF9-25556B57FE6D&major=61334&minor=32857&receiver=14159874354'
+  #  http://frozen-shelf-4349.herokuapp.com/beacons.json?UUID=B9407F30-F5F8-466E-AFF9-25556B57FE6D&major=61334&minor=32857&receiver=14159874354
 
   get '/beacons.json' do
     content_type :json
