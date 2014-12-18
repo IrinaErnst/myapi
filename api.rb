@@ -15,17 +15,6 @@ class API < Sinatra::Base
     else
       $redis = Redis.new
     end
-
-    # Sample data
-    # $redis.flushall
-    # $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|21137|30314|14159874354|2014-12-18T18:06:39Z", {"sender"=>"14159874355","message"=>"Hello World Green 39!","created_at"=>"2014-12-18T18:06:39Z"})
-    # $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|21137|30314|14159874354|2014-12-18T18:06:40Z", {"sender"=>"14159874355","message"=>"Hello World Green 40!","created_at"=>"2014-12-18T18:06:40Z"})
-    # $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|21137|30314|14159874354|2014-12-18T18:06:41Z", {"sender"=>"14159874355","message"=>"Hello World Green 41!","created_at"=>"2014-12-18T18:06:41Z"})
-
-    # $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|61334|32857|14159874354|2014-12-18T18:06:39Z", {"sender"=>"14159874355","message"=>"Hello World Purple 39!","created_at"=>"2014-12-18T18:06:39Z"})
-    # $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|61334|32857|14159874354|2014-12-18T18:06:40Z", {"sender"=>"14159874355","message"=>"Hello World Purple 40!","created_at"=>"2014-12-18T18:06:40Z"})
-    # $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|61334|32857|14159874354|2014-12-18T18:06:41Z", {"sender"=>"14159874355","message"=>"Hello World Purple 41!","created_at"=>"2014-12-18T18:06:41Z"})
-
   end
 
   get '/' do
@@ -34,6 +23,20 @@ class API < Sinatra::Base
  
   #  curl -i 'http://localhost:5000/beacons.json?UUID=B9407F30-F5F8-466E-AFF9-25556B57FE6D&major=21137&minor=30314&receiver=14159874354'
   #  curl -i 'http://localhost:5000/beacons.json?UUID=B9407F30-F5F8-466E-AFF9-25556B57FE6D&major=61334&minor=32857&receiver=14159874354'
+
+  get '/flushall' do
+    $redis.flushall
+  end 
+
+  get '/sample' do
+    $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|21137|30314|14159874354|2014-12-18T18:06:39Z", {"sender"=>"14159874355","message"=>"Hello World Green 39!","created_at"=>"2014-12-18T18:06:39Z"})
+    $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|21137|30314|14159874354|2014-12-18T18:06:40Z", {"sender"=>"14159874355","message"=>"Hello World Green 40!","created_at"=>"2014-12-18T18:06:40Z"})
+    $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|21137|30314|14159874354|2014-12-18T18:06:41Z", {"sender"=>"14159874355","message"=>"Hello World Green 41!","created_at"=>"2014-12-18T18:06:41Z"})
+
+    $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|61334|32857|14159874354|2014-12-18T18:06:39Z", {"sender"=>"14159874355","message"=>"Hello World Purple 39!","created_at"=>"2014-12-18T18:06:39Z"})
+    $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|61334|32857|14159874354|2014-12-18T18:06:40Z", {"sender"=>"14159874355","message"=>"Hello World Purple 40!","created_at"=>"2014-12-18T18:06:40Z"})
+    $redis.set("m|B9407F30-F5F8-466E-AFF9-25556B57FE6D|61334|32857|14159874354|2014-12-18T18:06:41Z", {"sender"=>"14159874355","message"=>"Hello World Purple 41!","created_at"=>"2014-12-18T18:06:41Z"})
+  end 
 
   get '/beacons.json' do
     content_type :json
