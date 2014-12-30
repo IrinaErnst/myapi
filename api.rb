@@ -68,4 +68,31 @@ class API < Sinatra::Base
     {"status" => "OK", "key" => key, "value" => value}.to_json
   end
 
+  get '/detectBeacons.json' do
+    content_type :json
+
+    if params[:beacon_id] == beacon_id && params[:major].to_i == 43875 && params[:minor].to_i == 58414
+      beacon_name = "Green"
+    elsif params[:beacon_id] == beacon_id && params[:major].to_i == 61334 && params[:minor].to_i == 32857
+      beacon_name = "Purple"
+    elsif params[:beacon_id] == beacon_id && params[:major].to_i == 21137 && params[:minor].to_i == 30314
+      beacon_name = "Blue"
+    else
+      beacon_name = "Unknown"
+    end
+ 
+    {:name => beacon_name,
+     :beacon_id => params[:beacon_id],
+     :major => params[:major].to_i,
+     :minor => params[:minor].to_i}.to_json
+  end
+
+
+  #  {:UUID => params[:UUID],
+  #  :major => params[:major].to_i,
+  #  :minor => params[:minor].to_i,
+  #  :receiver => params[:receiver],
+  #  :sender => params[:sender],
+  #  :message => params[:message],
+  #  :created_at => params[:created_at]}.to_json
 end
